@@ -23,11 +23,15 @@ const BlogCard: React.FC<BlogCardProps> = ({
 
   return (
     <div className="max-w-sm rounded overflow-hidden shadow-lg bg-white dark:bg-gray-800 transition-colors duration-200 border border-gray-200 dark:border-gray-700">
-      <img className="w-full h-48 object-cover" src={imageUrl} alt={title} />
+      <Link href={`/blogs/${id}`}>
+        <img className="w-full h-48 object-cover" src={imageUrl} alt={title} />
+      </Link>
       <div className="px-6 py-4">
-        <h2 className="font-bold text-xl mb-2 text-gray-800 dark:text-white">
-          {title}
-        </h2>
+        <Link href={`/blogs/${id}`}>
+          <h2 className="font-bold text-xl mb-2 text-gray-800 dark:text-white">
+            {title}
+          </h2>
+        </Link>
         <p className="text-gray-700 dark:text-gray-300 text-base mb-4">
           {truncatedExcerpt}
           {excerpt.length > 100 && (

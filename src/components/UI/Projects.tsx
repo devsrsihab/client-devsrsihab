@@ -53,7 +53,7 @@ const Projects: React.FC = () => {
 
   return (
     <section className="py-16 sm:py-24 bg-gray-50 dark:bg-gray-900 overflow-hidden">
-      <div className="container mx-auto px-4">
+      <div id="projects" className="container mx-auto px-4">
         <SectionTitle
           title="My Projects"
           subtitle="A showcase of my recent work and technical achievements"
