@@ -1,11 +1,13 @@
 import { Metadata } from "next";
 import Banner from "@/src/components/UI/Banner";
-import Container from "@/src/components/UI/Container";
 import { JsonLd } from "react-schemaorg";
 import { WebSite } from "schema-dts";
 import Education from "@/src/components/UI/Education";
 import Skills from "@/src/components/UI/Skills";
 import AboutMe from "@/src/components/UI/AboutMe";
+import Contact from "@/src/components/UI/Contact";
+import Blogs from "@/src/components/UI/Blogs";
+import Projects from "@/src/components/UI/Projects";
 
 export const metadata: Metadata = {
   title: "SRS Recipes - Discover Delicious Meals to Cook at Home",
@@ -45,9 +47,9 @@ export default function Home() {
       <AboutMe />
       <Education />
       <Skills />
-      <Container>
-        <h1>Hello World</h1>
-      </Container>
+      <Projects />
+      <Blogs />
+      <Contact />
     </>
   );
 }
