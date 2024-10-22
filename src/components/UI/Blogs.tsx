@@ -1,6 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import BlogCard from "./BlogCard";
+import SectionTitle from "./SectionTitle";
 
 const Blogs: React.FC = () => {
   // This would typically come from an API or database
@@ -39,32 +40,35 @@ const Blogs: React.FC = () => {
   ];
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8 text-center text-[#009688] dark:text-[#4db6ac]">
-        Our Blog Posts
-      </h1>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-        {blogPosts.slice(0, 3).map((post) => (
-          <BlogCard
-            key={post.id}
-            id={post.id}
-            title={post.title}
-            excerpt={post.excerpt}
-            date={post.date}
-            author={post.author}
-            imageUrl={post.imageUrl}
-          />
-        ))}
+    <section className="py-16 sm:py-24 bg-gray-50 dark:bg-gray-900 overflow-hidden">
+      <div className="container mx-auto px-4">
+        <SectionTitle
+          title="Blog Posts"
+          subtitle="Insights and tutorials on web development and technology"
+        />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-16">
+          {blogPosts.slice(0, 3).map((post) => (
+            <BlogCard
+              key={post.id}
+              id={post.id}
+              title={post.title}
+              excerpt={post.excerpt}
+              date={post.date}
+              author={post.author}
+              imageUrl={post.imageUrl}
+            />
+          ))}
+        </div>
+        <div className="text-center mt-12">
+          <Link
+            href="/blog"
+            className="inline-block bg-[#009688] text-white px-6 py-3 rounded-full hover:bg-[#00796b] transition-colors duration-300 text-lg font-semibold"
+          >
+            View All Posts
+          </Link>
+        </div>
       </div>
-      <div className="text-center mt-8">
-        <Link
-          href="/blog"
-          className="inline-block bg-[#009688] text-white px-6 py-2 rounded-full hover:bg-[#00796b] transition-colors duration-300"
-        >
-          View All Posts
-        </Link>
-      </div>
-    </div>
+    </section>
   );
 };
 

@@ -2,6 +2,7 @@
 
 import React, { useRef } from "react";
 import { motion, useScroll, useSpring, useTransform } from "framer-motion";
+import SectionTitle from "./SectionTitle";
 
 const Education = () => {
   const ref = useRef(null);
@@ -19,18 +20,14 @@ const Education = () => {
   return (
     <section
       ref={ref}
-      className="py-16 md:py-20 bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800"
+      className="py-16 sm:py-24 bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 overflow-hidden"
     >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl">
-        <motion.h2
-          initial={{ opacity: 0, y: -50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="text-3xl sm:text-4xl md:text-5xl font-bold text-center mb-16 sm:mb-20 md:mb-24 text-gray-800 dark:text-white"
-        >
-          Educational Journey
-        </motion.h2>
-        <div className="relative">
+        <SectionTitle
+          title="Educational Journey"
+          subtitle="My academic path and learning experiences"
+        />
+        <div className="relative mt-16">
           <motion.div
             style={{ scaleY: scaleX, originY: 0 }}
             className="absolute left-4 sm:left-1/2 top-0 bottom-0 w-1 bg-[#009688] dark:bg-[#00796b] transform sm:-translate-x-1/2"

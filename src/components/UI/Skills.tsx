@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
+import SectionTitle from "./SectionTitle";
 import {
   BootstrapSVGIcon,
   ExpressSVGIcon,
@@ -56,16 +57,12 @@ const SkillCategory = ({
   skills: Skill[];
   index: number;
 }) => {
-  const { scrollYProgress } = useScroll();
-  const x = useTransform(scrollYProgress, [0, 1], [50 * index, 0]);
-
   return (
     <motion.div
       className="mb-12"
-      initial={{ opacity: 0, x: 50 }}
-      animate={{ opacity: 1, x: 0 }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
       transition={{ duration: 0.5, delay: index * 0.2 }}
-      style={{ x }}
     >
       <h3 className="text-xl sm:text-2xl md:text-3xl font-bold mb-6 text-gray-900 dark:text-gray-100">
         {category}
@@ -117,12 +114,15 @@ const Skills = () => {
   return (
     <section className="py-16 sm:py-24 bg-gray-50 dark:bg-gray-900 overflow-hidden">
       <div className="container mx-auto px-4">
-        <motion.h2
-          className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-center mb-16 text-gray-900 dark:text-white"
+        <motion.div
           style={{ y: titleY, opacity: titleOpacity }}
+          className="mb-16"
         >
-          Tech <span className="text-[#009688] dark:text-[#4fd1c5]">Stack</span>
-        </motion.h2>
+          <SectionTitle
+            title="Tech Stack"
+            subtitle="Mastering the tools that power modern web development"
+          />
+        </motion.div>
         {skillCategories.map((category, index) => (
           <SkillCategory
             key={index}

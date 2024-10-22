@@ -1,13 +1,16 @@
+import React from "react";
 import { FaEnvelope, FaMapMarkerAlt, FaPhone } from "react-icons/fa";
+import SectionTitle from "./SectionTitle";
 
 const Contact = () => {
   return (
-    <section className="bg-gray-100 dark:bg-gray-800 py-16 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-5xl mx-auto">
-        <h2 className="text-4xl font-extrabold text-gray-900 dark:text-white text-center mb-12">
-          Get in Touch
-        </h2>
-        <div className="bg-white dark:bg-gray-700 rounded-lg shadow-xl overflow-hidden">
+    <section className="py-16 sm:py-24 bg-gray-50 dark:bg-gray-900 overflow-hidden">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
+        <SectionTitle
+          title="Get in Touch"
+          subtitle="Let's connect and discuss how we can work together"
+        />
+        <div className="mt-16 bg-white dark:bg-gray-800 rounded-lg shadow-xl overflow-hidden">
           <div className="grid grid-cols-1 md:grid-cols-2">
             <div className="p-8 md:p-12">
               <form className="space-y-6">
@@ -22,7 +25,7 @@ const Contact = () => {
                     type="text"
                     id="name"
                     name="name"
-                    className="block w-full px-4 py-3 rounded-md border-gray-300 shadow-sm focus:ring-[#009688] focus:border-[#009688] dark:bg-gray-600 dark:border-gray-500 dark:text-white"
+                    className="block w-full px-4 py-3 rounded-md border-gray-300 shadow-sm focus:ring-[#009688] focus:border-[#009688] dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                     placeholder="Your Name"
                   />
                 </div>
@@ -37,7 +40,7 @@ const Contact = () => {
                     type="email"
                     id="email"
                     name="email"
-                    className="block w-full px-4 py-3 rounded-md border-gray-300 shadow-sm focus:ring-[#009688] focus:border-[#009688] dark:bg-gray-600 dark:border-gray-500 dark:text-white"
+                    className="block w-full px-4 py-3 rounded-md border-gray-300 shadow-sm focus:ring-[#009688] focus:border-[#009688] dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                     placeholder="you@example.com"
                   />
                 </div>
@@ -52,7 +55,7 @@ const Contact = () => {
                     id="message"
                     name="message"
                     rows={4}
-                    className="block w-full px-4 py-3 rounded-md border-gray-300 shadow-sm focus:ring-[#009688] focus:border-[#009688] dark:bg-gray-600 dark:border-gray-500 dark:text-white"
+                    className="block w-full px-4 py-3 rounded-md border-gray-300 shadow-sm focus:ring-[#009688] focus:border-[#009688] dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                     placeholder="Your message here..."
                   />
                 </div>
@@ -72,7 +75,7 @@ const Contact = () => {
                 <div className="space-y-4">
                   <div className="flex items-start">
                     <FaMapMarkerAlt className="w-6 h-6 mt-1 mr-4" />
-                    <p>123 Culinary Lane, Foodville, CA 90210</p>
+                    <p>123 Developer Street, Tech City, CA 90210</p>
                   </div>
                   <div className="flex items-center">
                     <FaPhone className="w-6 h-6 mr-4" />
@@ -80,12 +83,12 @@ const Contact = () => {
                   </div>
                   <div className="flex items-center">
                     <FaEnvelope className="w-6 h-6 mr-4" />
-                    <p>hello@srsrecipes.com</p>
+                    <p>hello@yourportfolio.com</p>
                   </div>
                 </div>
               </div>
               <div className="mt-8">
-                <h4 className="text-xl font-semibold mb-4">Follow Us</h4>
+                <h4 className="text-xl font-semibold mb-4">Follow Me</h4>
                 <div className="flex space-x-4">
                   {/* Add social media icons here */}
                 </div>

@@ -1,5 +1,6 @@
 import React from "react";
 import ProjectCard from "./ProjectCard";
+import SectionTitle from "./SectionTitle";
 
 interface Project {
   title: string;
@@ -51,16 +52,19 @@ const Projects: React.FC = () => {
   ];
 
   return (
-    <div className="container mx-auto px-4 py-16">
-      <h2 className="text-3xl font-bold mb-8 text-center text-[#009688] dark:text-[#4db6ac]">
-        My Projects
-      </h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-        {projects.map((project, index) => (
-          <ProjectCard key={index} {...project} />
-        ))}
+    <section className="py-16 sm:py-24 bg-gray-50 dark:bg-gray-900 overflow-hidden">
+      <div className="container mx-auto px-4">
+        <SectionTitle
+          title="My Projects"
+          subtitle="A showcase of my recent work and technical achievements"
+        />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mt-16">
+          {projects.map((project, index) => (
+            <ProjectCard key={index} {...project} />
+          ))}
+        </div>
       </div>
-    </div>
+    </section>
   );
 };
 
