@@ -5,6 +5,7 @@ import { JsonLd } from "react-schemaorg";
 import { WebSite } from "schema-dts";
 import Education from "@/src/components/UI/Education";
 import Skills from "@/src/components/UI/Skills";
+import AboutMe from "@/src/components/UI/AboutMe";
 
 export const metadata: Metadata = {
   title: "SRS Recipes - Discover Delicious Meals to Cook at Home",
@@ -41,6 +42,7 @@ export default function Home() {
         }}
       />
       <Banner />
+      <AboutMe />
       <Education />
       <Skills />
       <Container>
