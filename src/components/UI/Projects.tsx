@@ -52,7 +52,10 @@ const Projects: React.FC = () => {
   ];
 
   return (
-    <section className="py-16 sm:py-24 bg-gray-50 dark:bg-gray-900 overflow-hidden">
+    <section
+      id="projectsSection"
+      className="py-16 sm:py-24 bg-gray-50 dark:bg-gray-900 overflow-hidden"
+    >
       <div id="projects" className="container mx-auto px-4">
         <SectionTitle
           title="My Projects"

@@ -28,7 +28,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html suppressHydrationWarning lang="en">
+    <html className="scroll-smooth" suppressHydrationWarning lang="en">
       <head />
       <body
         className={clsx(

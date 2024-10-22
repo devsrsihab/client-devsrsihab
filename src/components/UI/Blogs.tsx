@@ -40,7 +40,10 @@ const Blogs: React.FC = () => {
   ];
 
   return (
-    <section className="py-16 sm:py-24 bg-gray-50 dark:bg-gray-900 overflow-hidden">
+    <section
+      id="blogsSection"
+      className="py-16 sm:py-24 bg-gray-50 dark:bg-gray-900 overflow-hidden"
+    >
       <div className="container mx-auto px-4">
         <SectionTitle
           title="Blog Posts"

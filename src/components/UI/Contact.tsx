@@ -4,7 +4,10 @@ import SectionTitle from "./SectionTitle";
 
 const Contact = () => {
   return (
-    <section className="py-16 sm:py-24 bg-gray-50 dark:bg-gray-900 overflow-hidden">
+    <section
+      id="contactSection"
+      className="py-16 sm:py-24 bg-gray-50 dark:bg-gray-900 overflow-hidden"
+    >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
         <SectionTitle
           title="Get in Touch"

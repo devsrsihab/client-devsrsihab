@@ -9,25 +9,37 @@ export const siteConfig = {
       href: "/",
     },
     {
-      label: "Membership",
-      href: "/membership",
+      label: "Intro",
+      href: "/#introSection",
     },
     {
-      label: "Contact",
-      href: "/contact",
+      label: "About Me",
+      href: "/#aboutMeSection",
     },
     {
-      label: "About",
-      href: "/about",
+      label: "Skills",
+      href: "/#skillsSection",
     },
 
     {
-      label: "Login",
-      href: "/auth/login",
+      label: "Projects",
+      href: "/#projectsSection",
     },
     {
-      label: "Register",
-      href: "/auth/register",
+      label: "Blogs",
+      href: "/#blogsSection",
+    },
+    {
+      label: "Education",
+      href: "/#educationSection",
+    },
+    {
+      label: "Blogs",
+      href: "/blogs",
+    },
+    {
+      label: "Contact",
+      href: "/#contactSection",
     },
   ],
 

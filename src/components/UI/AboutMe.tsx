@@ -81,7 +81,10 @@ const AboutMe = () => {
   }, []);
 
   return (
-    <section className="py-16 sm:py-24 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900 overflow-hidden">
+    <section
+      id="aboutMeSection"
+      className="py-16 sm:py-24 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900 overflow-hidden"
+    >
       <div className="container mx-auto px-4 relative">
         <SectionTitle
           title="About Me"
