@@ -8,7 +8,7 @@ import { useGetCategories } from "@/src/hooks/categories.hook";
 import {
   useGetRecipeDetails,
   useUpdateRecipeMutation,
-} from "@/src/hooks/recipe.hook";
+} from "@/src/hooks/blog.hook";
 import { updateRecipeSchema } from "@/src/schemas/recipe.schem";
 import { IRecipe } from "@/src/types";
 import cloudinaryUpload from "@/src/utils/cloudinaryUpload";
@@ -26,7 +26,7 @@ import {
 } from "react-hook-form";
 import JoditEditor from "jodit-react";
 
-const EditRecipe = ({ recipeId }: { recipeId: string }) => {
+const EditBlog = ({ recipeId }: { recipeId: string }) => {
   // define state
   const [imageFile, setImageFile] = useState<File[] | []>([]);
   const [imagePreview, setImagePreview] = useState<string[] | []>([]);
@@ -389,4 +389,4 @@ const EditRecipe = ({ recipeId }: { recipeId: string }) => {
   );
 };
 
-export default EditRecipe;
+export default EditBlog;

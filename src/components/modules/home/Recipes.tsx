@@ -5,7 +5,7 @@ import InfiniteScroll from "react-infinite-scroll-component";
 
 import Card from "../../UI/Card";
 
-import { useGetRecipeFeeds } from "@/src/hooks/recipe.hook";
+import { useGetRecipeFeeds } from "@/src/hooks/blog.hook";
 import { IRecipe } from "@/src/types";
 import CardSkeleton from "../../UI/LoadingCardSkelton";
 const Recipes = ({ isCardHeader = true }: { isCardHeader?: boolean }) => {

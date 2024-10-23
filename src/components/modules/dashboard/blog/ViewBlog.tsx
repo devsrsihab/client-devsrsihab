@@ -1,6 +1,6 @@
 "use client";
 
-import { useGetRecipeDetails } from "@/src/hooks/recipe.hook";
+import { useGetRecipeDetails } from "@/src/hooks/blog.hook";
 import { IIngredient } from "@/src/types";
 import {
   ClockIcon,
@@ -16,8 +16,8 @@ import {
 } from "@heroicons/react/24/outline";
 import Image from "next/image";
 
-const ViewRecipe = ({ recipeId }: { recipeId: string }) => {
-  const { data, isLoading, isError } = useGetRecipeDetails(recipeId as string);
+const ViewBlog = ({ blogId }: { blogId: string }) => {
+  const { data, isLoading, isError } = useGetRecipeDetails(blogId as string);
 
   const recipe = data?.data;
 
@@ -156,4 +156,4 @@ const ViewRecipe = ({ recipeId }: { recipeId: string }) => {
   );
 };
 
-export default ViewRecipe;
+export default ViewBlog;

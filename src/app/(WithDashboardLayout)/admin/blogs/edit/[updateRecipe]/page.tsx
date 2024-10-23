@@ -1,8 +1,8 @@
-import EditRecipe from "@/src/components/modules/dashboard/recipe/EditRecipe";
+import EditBlog from "@/src/components/modules/dashboard/blog/EditBlog";
 
 const RecipeUpdate = ({ params }: { params: { updateRecipe: string } }) => {
   const { updateRecipe } = params;
-  return <EditRecipe recipeId={updateRecipe} />;
+  return <EditBlog recipeId={updateRecipe} />;
 };
 
 export default RecipeUpdate;

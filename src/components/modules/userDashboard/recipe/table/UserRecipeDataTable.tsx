@@ -1,6 +1,6 @@
 "use client";
 
-import { useGetRecipes } from "@/src/hooks/recipe.hook";
+import { useGetRecipes } from "@/src/hooks/blog.hook";
 import { IRecipe } from "@/src/types/recipe.type";
 import { Pagination } from "@nextui-org/pagination";
 import { Spinner } from "@nextui-org/spinner";

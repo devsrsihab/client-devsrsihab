@@ -1,12 +1,8 @@
 "use client";
 
-import { PlusIcon, TrashIcon } from "@/src/assets/icons";
 import FXInput from "@/src/components/Form/FXInput";
-import FXSelect from "@/src/components/Form/FXSelect";
 import { useGetCategories } from "@/src/hooks/categories.hook";
-import { useCreateRecipeMutation } from "@/src/hooks/recipe.hook";
-import { createRecipeSchema } from "@/src/schemas/recipe.schem";
-import { IRecipe } from "@/src/types";
+import { TBlog } from "@/src/types";
 import cloudinaryUpload from "@/src/utils/cloudinaryUpload";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -17,41 +13,28 @@ import {
   FieldValues,
   FormProvider,
   SubmitHandler,
-  useFieldArray,
   useForm,
   Controller,
 } from "react-hook-form";
 import dynamic from "next/dynamic";
+import { useCreateBlogMutation } from "@/src/hooks/blog.hook";
+import { createBlogSchema } from "@/src/schemas/blog.schema";
+import { Select, SelectItem } from "@nextui-org/select";
 
 const JoditEditor = dynamic(() => import("jodit-react"), { ssr: false });
 
 type FormValues = {
-  ingredients: Array<{ name: string; quantity: string }>;
-  description: string;
-  instructions: string;
+  content: string;
+  categories: string[];
 };
 
-function CreateRecipe() {
-  const desctiptionConfig = useMemo(
+function CreateBlog() {
+  const contentConfig = useMemo(
     () => ({
       theme: "default",
       minHeight: 200,
       maxHeight: 400,
-      placeholder: "Use description to create your recipe",
-      textColor: "#000000",
-      style: {
-        color: "#000000",
-      },
-    }),
-    []
-  );
-
-  const instructionsConfig = useMemo(
-    () => ({
-      theme: "default",
-      minHeight: 200,
-      maxHeight: 400,
-      placeholder: "Use instructions to create your recipe",
+      placeholder: "Use description to create your blog",
       textColor: "#000000",
       style: {
         color: "#000000",
@@ -63,10 +46,10 @@ function CreateRecipe() {
   const [imageFile, setImageFile] = useState<File[] | []>([]);
   const [imagePreview, setImagePreview] = useState<string[] | []>([]);
   const {
-    mutate: createRecipe,
-    isPending: recipePending,
+    mutate: createBlog,
+    isPending: blogPending,
     isSuccess,
-  } = useCreateRecipeMutation();
+  } = useCreateBlogMutation();
   // get categories
   const { data: categoriesData, isLoading: categoryLoading } =
     useGetCategories();
@@ -85,10 +68,7 @@ function CreateRecipe() {
 
   // define methods
   const methods = useForm<FormValues>({
-    resolver: zodResolver(createRecipeSchema),
-    defaultValues: {
-      ingredients: [{ name: "", quantity: "" }],
-    },
+    resolver: zodResolver(createBlogSchema),
   });
 
   const {
@@ -98,18 +78,9 @@ function CreateRecipe() {
     formState: { errors },
   } = methods;
 
-  // init usefieldarray obj
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: "ingredients",
-  });
-
   // if the data suucessfully submit then reset the form
   useEffect(() => {
     if (isSuccess) {
-      reset({
-        ingredients: [{ name: "", quantity: "" }],
-      });
       setImageFile([]);
       setImagePreview([]);
     }
@@ -122,28 +93,17 @@ function CreateRecipe() {
     if (imagePreview.length > 0) {
       imageUrl = await cloudinaryUpload(imageFile[0]);
     }
-    const recipeData: Partial<IRecipe> = {
+    const blogData: Partial<TBlog> = {
       ...data,
       title: data.title,
-      prepTime: Number(data.prepTime),
-      cookTime: Number(data.cookTime),
-      category: data.category,
-      description: data.description,
-      ingredients: data.ingredients.map(
-        (question: { name: string; quantity: string }) => ({
-          name: question.name,
-          quantity: question.quantity,
-        })
-      ),
+      categories: data.categories.split(","),
+      tags: data.tags.split(",").map((id: string) => id.trim()),
+      content: data.content,
       image: imageUrl || "",
     };
+    console.log("form data", blogData);
 
-    createRecipe(recipeData);
-  };
-
-  // handle field array append
-  const handleFieldAppent = () => {
-    append({ name: "", quantity: "" });
+    createBlog(blogData);
   };
 
   // handle image change
@@ -160,7 +120,6 @@ function CreateRecipe() {
       reader.readAsDataURL(file);
     }
   };
-
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
@@ -169,83 +128,39 @@ function CreateRecipe() {
 
   return (
     <div className="h-full rounded-xl bg-gradient-to-b from-default-100 px-20 py-12">
-      <h1 className="text-2xl font-semibold">Create a new recipe</h1>
+      <h1 className="text-2xl font-semibold">Create a new blog</h1>
       <Divider className="my-5" />
       <FormProvider {...methods}>
         <form onSubmit={handleSubmit(onSubmit)}>
-          {/* title and description */}
+          {/* title and category */}
           <div className="flex flex-wrap gap-4 py-2">
             <div className="min-w-fit flex-1">
               <FXInput name="title" label="Title" />
             </div>
             <div className="min-w-fit flex-1">
-              <FXSelect
-                options={categorieOptions}
-                disabled={categoryLoading}
-                name="category"
-                label="Category"
-                variant="bordered"
-              />
-            </div>
-          </div>
-
-          {/* prepTime and cookTime */}
-          <div className="flex flex-wrap gap-4 py-2">
-            <div className="min-w-fit flex-1">
-              <FXInput name="prepTime" type="number" label="Prep Time" />
-            </div>
-            <div className="min-w-fit flex-1">
-              <FXInput name="cookTime" type="number" label="Cook Time" />
-            </div>
-          </div>
-
-          {/* instructions and description */}
-          <div className="flex flex-wrap gap-4 py-2">
-            <div className="min-w-fit flex-1">
               <Controller
-                name="instructions"
+                name="categories"
                 control={control}
                 render={({ field }) => (
                   <>
-                    <label className="mb-3" htmlFor="instructions">
-                      Instructions
-                    </label>
-                    {isMounted && (
-                      <JoditEditor
-                        value={field.value as string}
-                        onChange={(newContent) => field.onChange(newContent)}
-                        config={instructionsConfig}
-                      />
-                    )}
-                    {errors.instructions && (
+                    <Select
+                      {...field}
+                      label="Category"
+                      placeholder="Select an category"
+                      disabled={categoryLoading}
+                      variant="bordered"
+                      selectionMode="multiple"
+                      className="max-w-xs"
+                    >
+                      {categorieOptions.map((category) => (
+                        <SelectItem key={category.key}>
+                          {category.label}
+                        </SelectItem>
+                      ))}
+                    </Select>
+                    {errors.categories && (
                       <span className="text-red-500">
-                        {errors.instructions.message as string}
-                      </span>
-                    )}
-                  </>
-                )}
-              />
-            </div>
-
-            <div className="min-w-fit flex-1">
-              <Controller
-                name="description"
-                control={control}
-                render={({ field }) => (
-                  <>
-                    <label className="mb-3" htmlFor="description">
-                      Description
-                    </label>
-                    {isMounted && (
-                      <JoditEditor
-                        value={field.value as string}
-                        onChange={(newContent) => field.onChange(newContent)}
-                        config={desctiptionConfig}
-                      />
-                    )}
-                    {errors.description && (
-                      <span className="text-red-500">
-                        {errors.description.message as string}
+                        {errors.categories.message as string}
                       </span>
                     )}
                   </>
@@ -253,40 +168,44 @@ function CreateRecipe() {
               />
             </div>
           </div>
+          {/* description and tags */}
+          <div className="flex flex-wrap gap-4 py-2">
+            <div className="min-w-fit flex-1">
+              <FXInput name="description" label="Description" />
+            </div>
 
-          {/* ingredients list */}
-          <Divider className="my-5" />
-          <div className="flex justify-between items-center">
-            <h2 className="text-2xl ">Ingredients List</h2>
-            <Button
-              isIconOnly
-              onClick={() => handleFieldAppent()}
-              radius="none"
-              className="p-1"
-            >
-              <PlusIcon />
-            </Button>
+            <div className="min-w-fit flex-1">
+              <FXInput name="tags" label="Tags" />
+            </div>
           </div>
 
-          {/* field loopt */}
-          <div className="space-y-3 my-5">
-            {fields.map((field, index) => (
-              <div className="flex gap-3 items-center" key={field.id}>
-                <FXInput name={`ingredients.${index}.name`} label="Name" />
-                <FXInput
-                  name={`ingredients.${index}.quantity`}
-                  label="Quantity"
-                />
-                <Button
-                  isIconOnly
-                  onClick={() => remove(index)}
-                  className="bg-red-500 p-2"
-                  radius="none"
-                >
-                  <TrashIcon />
-                </Button>
-              </div>
-            ))}
+          {/* content */}
+          <div className="flex flex-wrap gap-4 py-2">
+            <div className="min-w-fit flex-1">
+              <Controller
+                name="content"
+                control={control}
+                render={({ field }) => (
+                  <>
+                    <label className="mb-3" htmlFor="content">
+                      Content
+                    </label>
+                    {isMounted && (
+                      <JoditEditor
+                        value={field.value as string}
+                        onChange={(newContent) => field.onChange(newContent)}
+                        config={contentConfig}
+                      />
+                    )}
+                    {errors.content && (
+                      <span className="text-red-500">
+                        {errors.content.message as string}
+                      </span>
+                    )}
+                  </>
+                )}
+              />
+            </div>
           </div>
 
           {/* image */}
@@ -330,7 +249,7 @@ function CreateRecipe() {
           </div>
 
           <Button
-            isLoading={recipePending}
+            isLoading={blogPending}
             className="mt-5"
             radius="none"
             type="submit"
@@ -343,4 +262,4 @@ function CreateRecipe() {
   );
 }
 
-export default CreateRecipe;
+export default CreateBlog;

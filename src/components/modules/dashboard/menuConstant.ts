@@ -22,8 +22,20 @@ export const adminNavigation = [
     current: false,
   },
   {
-    name: "Recipe Management",
-    href: "/admin/recipe-managment",
+    name: "Blogs",
+    href: "/admin/blogs",
+    icon: CakeIcon,
+    current: false,
+  },
+  {
+    name: "Projects",
+    href: "/admin/projects",
+    icon: CakeIcon,
+    current: false,
+  },
+  {
+    name: "Skills",
+    href: "/admin/skills",
     icon: CakeIcon,
     current: false,
   },

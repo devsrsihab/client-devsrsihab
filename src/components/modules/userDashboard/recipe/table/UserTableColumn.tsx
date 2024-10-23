@@ -1,6 +1,6 @@
 "use client";
 
-import DeleteRecipeModal from "@/src/components/modal/DeleteRecipeModal";
+import DeleteRecipeModal from "@/src/components/modal/DeleteBlogModal";
 import { ICategory, IRecipe } from "@/src/types";
 import {
   EyeIcon,

@@ -3,3 +3,4 @@ export * from "./input.type";
 export * from "./formData.type";
 export * from "./recipe.type";
 export * from "./comment.type";
+export * from "./blog.type";

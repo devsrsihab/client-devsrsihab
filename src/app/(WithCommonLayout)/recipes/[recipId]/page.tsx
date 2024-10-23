@@ -7,7 +7,7 @@ import {
   useDownvoteRecipeMutation,
   useGetRecipeDetails,
   useUpvoteRecipeMutation,
-} from "@/src/hooks/recipe.hook";
+} from "@/src/hooks/blog.hook";
 import { Button } from "@nextui-org/button";
 import { DownvotedIcon, UpvotedIcon } from "@/src/config/icons";
 import { format, isBefore } from "date-fns";

@@ -1,7 +1,5 @@
 "use client";
 
-import { useGetRecipes } from "@/src/hooks/recipe.hook";
-import { IRecipe } from "@/src/types/recipe.type";
 import { Pagination } from "@nextui-org/pagination";
 import { Spinner } from "@nextui-org/spinner";
 import {
@@ -26,15 +24,16 @@ import {
 } from "@nextui-org/dropdown";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
 import { useUser } from "@/src/context/user.provider";
+import { useGetBlogs } from "@/src/hooks/blog.hook";
+import { TBlog } from "@/src/types";
 
-const RecipeDataTable = () => {
+const BlogDataTable = () => {
   const { user: currentUser } = useUser();
-  const { data, isLoading } = useGetRecipes();
+  const { data, isLoading } = useGetBlogs();
   const [page, setPage] = useState(1);
   const [filterValue, setFilterValue] = useState("");
-  const [statusFilter, setStatusFilter] = useState<string>("all");
 
-  const recipes = data?.data;
+  const blogs = data?.data;
   const rowsPerPage = 5;
 
   const onClear = useCallback(() => {
@@ -64,23 +63,16 @@ const RecipeDataTable = () => {
   );
 
   const filteredItems = useMemo(() => {
-    let filteredRecipes = [...(recipes || [])];
+    let filteredBlogs = [...(blogs || [])];
 
     if (hasSearchFilter) {
-      filteredRecipes = filteredRecipes.filter((recipe: IRecipe) =>
-        recipe.title.toLowerCase().includes(filterValue.toLowerCase())
+      filteredBlogs = filteredBlogs.filter((blog: TBlog) =>
+        blog.title.toLowerCase().includes(filterValue.toLowerCase())
       );
     }
 
-    if (statusFilter !== "all") {
-      filteredRecipes = filteredRecipes.filter(
-        (recipe: IRecipe) =>
-          statusFilter?.split(",").includes(recipe?.status as string) ?? false
-      );
-    }
-
-    return filteredRecipes;
-  }, [recipes, filterValue, statusFilter, hasSearchFilter]);
+    return filteredBlogs;
+  }, [blogs, filterValue, hasSearchFilter]);
 
   const topContent = useMemo(() => {
     return (
@@ -107,12 +99,7 @@ const RecipeDataTable = () => {
                 disallowEmptySelection
                 aria-label="Table Columns"
                 closeOnSelect={false}
-                selectedKeys={new Set(statusFilter.split(","))}
                 selectionMode="multiple"
-                onSelectionChange={(keys) => {
-                  const selected = Array.from(keys);
-                  setStatusFilter(selected.join(","));
-                }}
               >
                 {statusOptions.map((status) => (
                   <DropdownItem key={status.id} className="capitalize">
@@ -125,32 +112,25 @@ const RecipeDataTable = () => {
           <div className="flex justify-end">
             {currentUser?.role === "admin" && (
               <Button>
-                <Link href="/admin/recipe-managment/create">Add Recipe</Link>
+                <Link href="/admin/blogs/create">Add Blog</Link>
               </Button>
             )}
 
             {currentUser?.role === "user" && (
               <Button>
-                <Link href="/user/recipe/create">Add Recipe</Link>
+                <Link href="/user/blog/create">Add Blog</Link>
               </Button>
             )}
           </div>
         </div>
       </div>
     );
-  }, [
-    filterValue,
-    statusFilter,
-    onSearchChange,
-    onClear,
-    currentUser?.role,
-    statusOptions,
-  ]);
+  }, [filterValue, onSearchChange, onClear, currentUser?.role, statusOptions]);
 
   return (
     <div className="relative">
       <Table
-        aria-label="Recipe table with pagination"
+        aria-label="Blog table with pagination"
         topContent={topContent}
         bottomContent={
           filteredItems.length > 0 ? (
@@ -182,12 +162,12 @@ const RecipeDataTable = () => {
           )}
           isLoading={isLoading}
           loadingContent={<Spinner label="Loading..." />}
-          emptyContent={"No recipes found"}
+          emptyContent={"No blogs found"}
         >
-          {(recipe: IRecipe) => (
-            <TableRow key={recipe._id}>
+          {(blog: TBlog) => (
+            <TableRow key={blog._id}>
               {(columnKey) => (
-                <TableCell>{renderCell(recipe, columnKey) as any}</TableCell>
+                <TableCell>{renderCell(blog, columnKey) as any}</TableCell>
               )}
             </TableRow>
           )}
@@ -197,4 +177,4 @@ const RecipeDataTable = () => {
   );
 };
 
-export default RecipeDataTable;
+export default BlogDataTable;

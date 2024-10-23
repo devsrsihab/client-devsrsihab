@@ -1,7 +1,7 @@
 "use client";
 
-import DeleteRecipeModal from "@/src/components/modal/DeleteRecipeModal";
-import { ICategory, IRecipe } from "@/src/types";
+import DeleteRecipeModal from "@/src/components/modal/DeleteBlogModal";
+import { ICategory, TBlog } from "@/src/types";
 import {
   EyeIcon,
   PencilIcon,
@@ -15,8 +15,8 @@ import { Image } from "@nextui-org/image";
 import Link from "next/link";
 import React from "react";
 
-export const renderCell = (recipe: IRecipe, columnKey: React.Key) => {
-  const cellValue = recipe[columnKey as keyof IRecipe];
+export const renderCell = (blog: TBlog, columnKey: React.Key) => {
+  const cellValue = blog[columnKey as keyof TBlog];
 
   switch (columnKey) {
     case "image":
@@ -24,7 +24,7 @@ export const renderCell = (recipe: IRecipe, columnKey: React.Key) => {
         <Image
           isBlurred={cellValue ? false : true}
           src={cellValue as string}
-          alt="recipe"
+          alt="blog"
           width={100}
           height={70}
           className="object-cover"
@@ -75,14 +75,14 @@ export const renderCell = (recipe: IRecipe, columnKey: React.Key) => {
       return (
         <div className="relative flex items-center gap-4">
           <Link
-            href={`/admin/recipe-managment/view/${recipe._id}`}
+            href={`/admin/blog-managment/view/${blog._id}`}
             className="cursor-pointer text-lg text-default-400 active:opacity-50"
           >
             <EyeIcon className="size-5" />
           </Link>
 
           <Link
-            href={`/admin/recipe-managment/edit/${recipe._id}`}
+            href={`/admin/blog-managment/edit/${blog._id}`}
             className="cursor-pointer text-lg text-default-400 active:opacity-50"
           >
             <PencilIcon className="size-5" />
@@ -91,7 +91,7 @@ export const renderCell = (recipe: IRecipe, columnKey: React.Key) => {
           <span className="cursor-pointer text-lg  active:opacity-50">
             <DeleteRecipeModal
               buttonContent={<TrashIcon className="size-5" />}
-              recipeid={recipe?._id}
+              blogid={blog?._id}
             />
           </span>
         </div>

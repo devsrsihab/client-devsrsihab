@@ -18,7 +18,6 @@ import { ThemeSwitch } from "@/src/components/theme-switch";
 import { Logo } from "@/src/components/icons";
 import NavbarDropdown from "./NavbarDropdown";
 import { useUser } from "@/src/context/user.provider";
-import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { logOutUser } from "@/src/services/AuthService";
 import { protectedRoutes } from "@/src/constant";
@@ -136,7 +135,7 @@ export const Navbar = () => {
             <NavbarDropdown />
           </NavbarItem>
         ) : (
-          <Link href="/auth/login">Login</Link>
+          <></>
         )}
       </NavbarContent>
 
