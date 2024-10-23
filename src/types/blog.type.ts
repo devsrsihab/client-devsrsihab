@@ -6,6 +6,7 @@ export type TBlog = {
   content: string;
   categories: TCategory[];
   publishedDate: Date;
+  status: string;
   tags: string[];
   isFeatured: boolean;
   isDeleted: boolean;

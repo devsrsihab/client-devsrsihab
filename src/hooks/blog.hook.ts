@@ -9,7 +9,7 @@ import {
   updateBlog,
 } from "../services/Blog";
 
-// create recipes
+// create blogs
 export const useCreateBlogMutation = () => {
   const queryClient = useQueryClient();
   return useMutation<any, Error, FieldValues>({
@@ -23,16 +23,16 @@ export const useCreateBlogMutation = () => {
   });
 };
 
-// get all recipes based user createdBy
+// get all blogs based user createdBy
 export const useGetBlogs = () => {
   return useQuery({
-    queryKey: ["GET_RECIPES"],
+    queryKey: ["GET_BLOGS"],
     queryFn: async () => await getBlogs(),
     refetchOnWindowFocus: false, // Prevent refetching on window focus
   });
 };
 
-// get recipe details
+// get blog details
 export const useGetBlogDetails = (blogId: string) => {
   return useQuery({
     queryKey: ["GET_BLOG_DETAILS", blogId],
@@ -49,29 +49,28 @@ export const useGetBlogDetails = (blogId: string) => {
   });
 };
 
-// update recipe
+// update blog
 export const useUpdateBlogMutation = () => {
   const queryClient = useQueryClient();
   return useMutation<any, Error, FieldValues>({
-    mutationKey: ["UPDATE_RECIPE"],
+    mutationKey: ["UPDATE_BLOG"],
     mutationFn: async ({ id, data }) => await updateBlog(id, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["GET_RECIPE_FEEDS"] });
-      queryClient.invalidateQueries({ queryKey: ["GET_RECIPES"] });
+      queryClient.invalidateQueries({ queryKey: ["GET_BLOGS"] });
       toast.success("Blog Updated Successfully");
     },
     onError: (error) => toast.error(error.message.replace("Error: ", "")),
   });
 };
 
-// delete recipe
+// delete blog
 export const useDeleteBlogMutation = () => {
   const queryClient = useQueryClient();
   return useMutation<any, Error, string>({
-    mutationKey: ["DELETE_RECIPE"],
-    mutationFn: async (recipeId) => await deleteBlog(recipeId),
+    mutationKey: ["DELETE_BLOG"],
+    mutationFn: async (blogId) => await deleteBlog(blogId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["GET_RECIPES"] });
+      queryClient.invalidateQueries({ queryKey: ["GET_BLOGS"] });
       toast.success("Blog Deleted Successfully");
     },
     onError: (error) => toast.error(error.message.replace("Error: ", "")),
