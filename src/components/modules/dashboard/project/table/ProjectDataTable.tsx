@@ -1,7 +1,5 @@
 "use client";
 
-import { useGetBlogs } from "@/src/hooks/blog.hook";
-import { TBlog } from "@/src/types";
 import { Pagination } from "@nextui-org/pagination";
 import { Spinner } from "@nextui-org/spinner";
 import {
@@ -12,10 +10,10 @@ import {
   TableHeader,
   TableRow,
 } from "@nextui-org/table";
-import { useCallback, useMemo, useState, useEffect } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Button } from "@nextui-org/button";
 import Link from "next/link";
-import { renderCell } from "./table/TableColumn";
+import { renderCell } from "./TableColumn";
 import { Input } from "@nextui-org/input";
 import { SearchIcon } from "@/src/components/icons";
 import {
@@ -26,18 +24,17 @@ import {
 } from "@nextui-org/dropdown";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
 import { useUser } from "@/src/context/user.provider";
+import { useGetProjects } from "@/src/hooks/project.hook";
+import { IProject } from "@/src/types";
 
-const BlogDataTable = () => {
+const ProjectDataTable = () => {
   const { user: currentUser } = useUser();
-  const { data, isLoading } = useGetBlogs();
+  const { data, isLoading } = useGetProjects();
   const [page, setPage] = useState(1);
   const [filterValue, setFilterValue] = useState("");
-  const [statusFilter, setStatusFilter] = useState<string>("all");
 
-  const blogs = data?.data;
+  const projects = data?.data;
   const rowsPerPage = 5;
-
-  useEffect(() => {}, [blogs]);
 
   const onClear = useCallback(() => {
     setFilterValue("");
@@ -66,24 +63,16 @@ const BlogDataTable = () => {
   );
 
   const filteredItems = useMemo(() => {
-    let filteredBlogs = [...(blogs || [])];
+    let filteredProjects = [...(projects || [])];
 
     if (hasSearchFilter) {
-      filteredBlogs = filteredBlogs.filter((blog: TBlog) =>
-        blog.title.toLowerCase().includes(filterValue.toLowerCase())
+      filteredProjects = filteredProjects.filter((project: IProject) =>
+        project.title.toLowerCase().includes(filterValue.toLowerCase())
       );
     }
 
-    if (statusFilter !== "all") {
-      const statusArray = statusFilter.split(",");
-      filteredBlogs = filteredBlogs.filter((blog: TBlog) => {
-        const result = statusArray.includes(blog?.status as string);
-        return result;
-      });
-    }
-
-    return filteredBlogs;
-  }, [blogs, filterValue, statusFilter, hasSearchFilter]);
+    return filteredProjects;
+  }, [projects, filterValue, hasSearchFilter]);
 
   const topContent = useMemo(() => {
     return (
@@ -110,12 +99,7 @@ const BlogDataTable = () => {
                 disallowEmptySelection
                 aria-label="Table Columns"
                 closeOnSelect={false}
-                selectedKeys={new Set(statusFilter.split(","))}
                 selectionMode="multiple"
-                onSelectionChange={(keys) => {
-                  const selected = Array.from(keys) as string[];
-                  setStatusFilter(selected.join(","));
-                }}
               >
                 {statusOptions.map((status) => (
                   <DropdownItem key={status.id} className="capitalize">
@@ -128,33 +112,25 @@ const BlogDataTable = () => {
           <div className="flex justify-end">
             {currentUser?.role === "admin" && (
               <Button>
-                <Link href="/admin/blogs/create">Add Blog</Link>
+                <Link href="/admin/projects/create">Add Project</Link>
               </Button>
             )}
+
             {currentUser?.role === "user" && (
               <Button>
-                <Link href="/user/blog/create">Add Blog</Link>
+                <Link href="/user/project/create">Add Project</Link>
               </Button>
             )}
           </div>
         </div>
       </div>
     );
-  }, [
-    filterValue,
-    statusFilter,
-    onSearchChange,
-    onClear,
-    currentUser?.role,
-    statusOptions,
-  ]);
-
-  useEffect(() => {}, [statusFilter]);
+  }, [filterValue, onSearchChange, onClear, currentUser?.role, statusOptions]);
 
   return (
     <div className="relative">
       <Table
-        aria-label="Blog table with pagination"
+        aria-label="Project table with pagination"
         topContent={topContent}
         bottomContent={
           filteredItems.length > 0 ? (
@@ -175,10 +151,9 @@ const BlogDataTable = () => {
         <TableHeader>
           <TableColumn key="image">Image</TableColumn>
           <TableColumn key="title">Title</TableColumn>
-          <TableColumn className="capitalize" key="categories">
-            Categories
+          <TableColumn className="capitalize" key="technologies">
+            Technologies
           </TableColumn>
-          <TableColumn key="status">Status</TableColumn>
           <TableColumn key="actions">Actions</TableColumn>
         </TableHeader>
         <TableBody
@@ -188,12 +163,12 @@ const BlogDataTable = () => {
           )}
           isLoading={isLoading}
           loadingContent={<Spinner label="Loading..." />}
-          emptyContent={"No blogs found"}
+          emptyContent={"No projects found"}
         >
-          {(blog: TBlog) => (
-            <TableRow key={blog._id}>
+          {(project: IProject) => (
+            <TableRow className="capitalize" key={project._id}>
               {(columnKey) => (
-                <TableCell>{renderCell(blog, columnKey) as any}</TableCell>
+                <TableCell>{renderCell(project, columnKey) as any}</TableCell>
               )}
             </TableRow>
           )}
@@ -203,4 +178,4 @@ const BlogDataTable = () => {
   );
 };
 
-export default BlogDataTable;
+export default ProjectDataTable;

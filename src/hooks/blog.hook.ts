@@ -13,10 +13,10 @@ import {
 export const useCreateBlogMutation = () => {
   const queryClient = useQueryClient();
   return useMutation<any, Error, FieldValues>({
-    mutationKey: ["CREATE_RECIPE"],
+    mutationKey: ["CREATE_BLOG"],
     mutationFn: async (postData) => await createBlog(postData),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["GET_RECIPE_FEEDS"] });
+      queryClient.invalidateQueries({ queryKey: ["GET_BLOGS"] });
       toast.success("Blog Created Successfully");
     },
     onError: (error) => toast.error(error.message.replace("Error: ", "")),

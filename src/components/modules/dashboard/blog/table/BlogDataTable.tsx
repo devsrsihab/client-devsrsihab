@@ -1,5 +1,7 @@
 "use client";
 
+import { useGetBlogs } from "@/src/hooks/blog.hook";
+import { TBlog } from "@/src/types";
 import { Pagination } from "@nextui-org/pagination";
 import { Spinner } from "@nextui-org/spinner";
 import {
@@ -10,7 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from "@nextui-org/table";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState, useEffect } from "react";
 import { Button } from "@nextui-org/button";
 import Link from "next/link";
 import { renderCell } from "./TableColumn";
@@ -24,17 +26,18 @@ import {
 } from "@nextui-org/dropdown";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
 import { useUser } from "@/src/context/user.provider";
-import { useGetBlogs } from "@/src/hooks/blog.hook";
-import { TBlog } from "@/src/types";
 
 const BlogDataTable = () => {
   const { user: currentUser } = useUser();
   const { data, isLoading } = useGetBlogs();
   const [page, setPage] = useState(1);
   const [filterValue, setFilterValue] = useState("");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
 
   const blogs = data?.data;
   const rowsPerPage = 5;
+
+  useEffect(() => {}, [blogs]);
 
   const onClear = useCallback(() => {
     setFilterValue("");
@@ -71,8 +74,16 @@ const BlogDataTable = () => {
       );
     }
 
+    if (statusFilter !== "all") {
+      const statusArray = statusFilter.split(",");
+      filteredBlogs = filteredBlogs.filter((blog: TBlog) => {
+        const result = statusArray.includes(blog?.status as string);
+        return result;
+      });
+    }
+
     return filteredBlogs;
-  }, [blogs, filterValue, hasSearchFilter]);
+  }, [blogs, filterValue, statusFilter, hasSearchFilter]);
 
   const topContent = useMemo(() => {
     return (
@@ -99,7 +110,12 @@ const BlogDataTable = () => {
                 disallowEmptySelection
                 aria-label="Table Columns"
                 closeOnSelect={false}
+                selectedKeys={new Set(statusFilter.split(","))}
                 selectionMode="multiple"
+                onSelectionChange={(keys) => {
+                  const selected = Array.from(keys) as string[];
+                  setStatusFilter(selected.join(","));
+                }}
               >
                 {statusOptions.map((status) => (
                   <DropdownItem key={status.id} className="capitalize">
@@ -115,7 +131,6 @@ const BlogDataTable = () => {
                 <Link href="/admin/blogs/create">Add Blog</Link>
               </Button>
             )}
-
             {currentUser?.role === "user" && (
               <Button>
                 <Link href="/user/blog/create">Add Blog</Link>
@@ -125,7 +140,16 @@ const BlogDataTable = () => {
         </div>
       </div>
     );
-  }, [filterValue, onSearchChange, onClear, currentUser?.role, statusOptions]);
+  }, [
+    filterValue,
+    statusFilter,
+    onSearchChange,
+    onClear,
+    currentUser?.role,
+    statusOptions,
+  ]);
+
+  useEffect(() => {}, [statusFilter]);
 
   return (
     <div className="relative">
@@ -167,7 +191,7 @@ const BlogDataTable = () => {
           emptyContent={"No blogs found"}
         >
           {(blog: TBlog) => (
-            <TableRow className="capitalize" key={blog._id}>
+            <TableRow key={blog._id}>
               {(columnKey) => (
                 <TableCell>{renderCell(blog, columnKey) as any}</TableCell>
               )}
