@@ -1,9 +1,9 @@
-import ViewBlog from "@/src/components/modules/dashboard/blog/ViewBlog";
+import ViewProject from "@/src/components/modules/dashboard/project/ViewProject";
 
-const BlogDetailsView = ({ params }: { params: { blogId: string } }) => {
-  const { blogId } = params;
+const ProjectDetailsView = ({ params }: { params: { projectId: string } }) => {
+  const { projectId } = params;
 
-  return <ViewBlog blogId={blogId} />;
+  return <ViewProject projectId={projectId} />;
 };
 
-export default BlogDetailsView;
+export default ProjectDetailsView;

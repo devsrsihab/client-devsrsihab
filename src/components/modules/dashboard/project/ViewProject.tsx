@@ -1,16 +1,17 @@
 "use client";
 
+import { GithubIcon } from "@/src/components/icons";
 import { useGetProjectDetails } from "@/src/hooks/project.hook";
-import { TCategory } from "@/src/types";
+import { ITechnology } from "@/src/types";
 import {
   CalendarDaysIcon,
   ClockIcon,
   PencilSquareIcon,
-  BookOpenIcon,
-  HashtagIcon,
-  StarIcon,
   ShareIcon,
   EyeIcon,
+  CodeBracketIcon,
+  LinkIcon,
+  GlobeAltIcon,
 } from "@heroicons/react/24/outline";
 import Image from "next/image";
 
@@ -42,7 +43,7 @@ const ViewProject = ({ projectId }: { projectId: string }) => {
       <div className="relative mb-12 rounded-3xl overflow-hidden shadow-2xl group">
         <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-600 opacity-75 group-hover:opacity-90 transition-opacity duration-300" />
         <Image
-          src={project?.image}
+          src={project?.image || "https://placehold.co/600x400/png"}
           alt={project?.title}
           width={1200}
           height={600}
@@ -58,10 +59,6 @@ const ViewProject = ({ projectId }: { projectId: string }) => {
               <CalendarDaysIcon className="h-4 w-4 mr-2" />
               {new Date(project?.createdAt).toLocaleDateString()}
             </span>
-            <span className="flex items-center bg-white/20 rounded-full px-3 py-1">
-              <StarIcon className="h-4 w-4 mr-2" />
-              {project?.status}
-            </span>
             {project?.isFeatured && (
               <span className="flex items-center bg-yellow-400/80 text-yellow-900 rounded-full px-3 py-1">
                 <EyeIcon className="h-4 w-4 mr-2" />
@@ -76,41 +73,79 @@ const ViewProject = ({ projectId }: { projectId: string }) => {
         <div className="flex flex-wrap gap-4 mb-8">
           <div className="flex-1 min-w-[200px]">
             <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-4 flex items-center">
-              <BookOpenIcon className="h-6 w-6 mr-2 text-indigo-500" />
-              Categories
+              <CodeBracketIcon className="h-6 w-6 mr-2 text-indigo-500" />
+              Technologies
             </h2>
-            <div className="flex flex-wrap gap-2">
-              {blog?.categories.map((category: TCategory) => (
-                <span
-                  key={category._id}
-                  className="bg-indigo-100 text-indigo-800 text-sm font-medium px-3 py-1 rounded-full dark:bg-indigo-900 dark:text-indigo-200"
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+              {project?.technologies.map((tech: ITechnology) => (
+                <div
+                  key={tech._id}
+                  className="bg-indigo-100 text-indigo-800 text-sm font-medium px-3 py-2 rounded-full dark:bg-indigo-900 dark:text-indigo-200 flex items-center justify-center"
                 >
-                  {category.name}
-                </span>
+                  <span className="truncate max-w-full" title={tech.name}>
+                    {tech.name}
+                  </span>
+                </div>
               ))}
             </div>
           </div>
           <div className="flex-1 min-w-[200px]">
             <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-4 flex items-center">
-              <HashtagIcon className="h-6 w-6 mr-2 text-purple-500" />
-              Tags
+              <LinkIcon className="h-6 w-6 mr-2 text-purple-500" />
+              Project Links
             </h2>
             <div className="flex flex-wrap gap-2">
-              {blog?.tags.map((tag: string, index: number) => (
-                <span
-                  key={index}
-                  className="bg-purple-100 text-purple-800 text-sm font-medium px-3 py-1 rounded-full dark:bg-purple-900 dark:text-purple-200"
+              {project?.frontendGithubLink && (
+                <a
+                  href={project.frontendGithubLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-purple-100 text-purple-800 text-sm font-medium px-3 py-1 rounded-full dark:bg-purple-900 dark:text-purple-200 flex items-center"
                 >
-                  #{tag}
-                </span>
-              ))}
+                  <GithubIcon className="h-5 w-5 mr-2" />
+                  Frontend GitHub
+                </a>
+              )}
+              {project?.backendGithubLink && (
+                <a
+                  href={project.backendGithubLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-purple-100 text-purple-800 text-sm font-medium px-3 py-1 rounded-full dark:bg-purple-900 dark:text-purple-200 flex items-center"
+                >
+                  <GithubIcon className="h-5 w-5 mr-2" />
+                  Backend GitHub
+                </a>
+              )}
+              {project?.frontendLiveLink && (
+                <a
+                  href={project.frontendLiveLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-green-100 text-green-800 text-sm font-medium px-3 py-1 rounded-full dark:bg-green-900 dark:text-green-200 flex items-center"
+                >
+                  <GlobeAltIcon className="h-5 w-5 mr-2" />
+                  Frontend Live
+                </a>
+              )}
+              {project?.backendLiveLink && (
+                <a
+                  href={project.backendLiveLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-green-100 text-green-800 text-sm font-medium px-3 py-1 rounded-full dark:bg-green-900 dark:text-green-200 flex items-center"
+                >
+                  <GlobeAltIcon className="h-5 w-5 mr-2" />
+                  Backend Live
+                </a>
+              )}
             </div>
           </div>
         </div>
 
         <div className="prose prose-lg max-w-none dark:prose-invert">
           <div
-            dangerouslySetInnerHTML={{ __html: blog?.content || "" }}
+            dangerouslySetInnerHTML={{ __html: project?.content || "" }}
             className="bg-gray-50 dark:bg-gray-900/50 rounded-2xl p-6 shadow-inner"
           />
         </div>
@@ -120,16 +155,16 @@ const ViewProject = ({ projectId }: { projectId: string }) => {
         <div className="flex items-center space-x-4">
           <span className="flex items-center">
             <PencilSquareIcon className="h-5 w-5 mr-2 text-green-500" />
-            Created: {new Date(blog?.createdAt).toLocaleDateString()}
+            Created: {new Date(project?.createdAt).toLocaleDateString()}
           </span>
           <span className="flex items-center">
             <ClockIcon className="h-5 w-5 mr-2 text-blue-500" />
-            Updated: {new Date(blog?.updatedAt).toLocaleDateString()}
+            Updated: {new Date(project?.updatedAt).toLocaleDateString()}
           </span>
         </div>
         <button className="flex items-center text-indigo-500 hover:text-indigo-600 transition-colors">
           <ShareIcon className="h-5 w-5 mr-2" />
-          Share this post
+          Share this project
         </button>
       </div>
     </div>
