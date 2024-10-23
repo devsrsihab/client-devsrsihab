@@ -1,6 +1,6 @@
 "use client";
 
-import { useDeleteBlogMutation } from "@/src/hooks/project.hook";
+import { useDeleteProjectMutation } from "@/src/hooks/project.hook";
 import { Button } from "@nextui-org/button";
 import {
   Modal,
@@ -12,7 +12,7 @@ import {
 } from "@nextui-org/modal";
 import { ReactNode } from "react";
 
-export default function DeleteBlogModal({
+export default function DeleteProjectModal({
   projectId,
   buttonContent,
 }: {
@@ -20,12 +20,12 @@ export default function DeleteBlogModal({
   buttonContent?: ReactNode;
 }) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const { mutate: deleteBlog, isPending: deleteBlogLoading } =
-    useDeleteBlogMutation();
+  const { mutate: deleteProject, isPending: deleteProjectLoading } =
+    useDeleteProjectMutation();
 
   // handle delete project
-  const handleDeleteBlog = (id: string) => {
-    deleteBlog(id);
+  const handleDeleteProject = (id: string) => {
+    deleteProject(id);
   };
 
   return (
@@ -42,7 +42,7 @@ export default function DeleteBlogModal({
           {(onClose: any) => (
             <>
               <ModalHeader className="flex flex-col gap-1">
-                Delete Blog
+                Delete Project
               </ModalHeader>
               <ModalBody>
                 <p>Are you sure you want to delete this project?</p>
@@ -52,10 +52,10 @@ export default function DeleteBlogModal({
                   Close
                 </Button>
                 <Button
-                  onClick={() => handleDeleteBlog(projectId as string)}
+                  onClick={() => handleDeleteProject(projectId as string)}
                   color="danger"
                   onPress={onClose}
-                  isLoading={deleteBlogLoading}
+                  isLoading={deleteProjectLoading}
                 >
                   Action
                 </Button>

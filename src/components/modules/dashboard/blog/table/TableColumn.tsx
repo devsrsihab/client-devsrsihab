@@ -1,6 +1,6 @@
 "use client";
 
-import DeleteRecipeModal from "@/src/components/modal/DeleteBlogModal";
+import DeleteBlogModal from "@/src/components/modal/DeleteBlogModal";
 import { TBlog, TCategory } from "@/src/types";
 import {
   EyeIcon,
@@ -101,7 +101,7 @@ export const renderCell = (blog: TBlog, columnKey: React.Key) => {
           </Link>
 
           <span className="cursor-pointer text-lg  active:opacity-50">
-            <DeleteRecipeModal
+            <DeleteBlogModal
               buttonContent={<TrashIcon className="size-5" />}
               blogid={blog?._id}
             />

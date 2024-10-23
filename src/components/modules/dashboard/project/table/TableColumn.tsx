@@ -1,6 +1,6 @@
 "use client";
 
-import DeleteRecipeModal from "@/src/components/modal/DeleteBlogModal";
+import DeleteProjectModal from "@/src/components/modal/DeleteProjectModal";
 import { IProject } from "@/src/types";
 import { EyeIcon, PencilIcon, TrashIcon } from "@heroicons/react/20/solid";
 import { Image } from "@nextui-org/image";
@@ -55,9 +55,9 @@ export const renderCell = (project: IProject, columnKey: React.Key) => {
           </Link>
 
           <span className="cursor-pointer text-lg  active:opacity-50">
-            <DeleteRecipeModal
+            <DeleteProjectModal
               buttonContent={<TrashIcon className="size-5" />}
-              blogid={project?._id}
+              projectId={project?._id}
             />
           </span>
         </div>
