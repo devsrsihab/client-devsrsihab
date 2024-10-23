@@ -151,7 +151,9 @@ const BlogDataTable = () => {
         <TableHeader>
           <TableColumn key="image">Image</TableColumn>
           <TableColumn key="title">Title</TableColumn>
-          <TableColumn key="category">Category</TableColumn>
+          <TableColumn className="capitalize" key="categories">
+            Categories
+          </TableColumn>
           <TableColumn key="status">Status</TableColumn>
           <TableColumn key="actions">Actions</TableColumn>
         </TableHeader>
@@ -165,7 +167,7 @@ const BlogDataTable = () => {
           emptyContent={"No blogs found"}
         >
           {(blog: TBlog) => (
-            <TableRow key={blog._id}>
+            <TableRow className="capitalize" key={blog._id}>
               {(columnKey) => (
                 <TableCell>{renderCell(blog, columnKey) as any}</TableCell>
               )}

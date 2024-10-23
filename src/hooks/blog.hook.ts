@@ -8,7 +8,6 @@ import {
   getBlogs,
   updateBlog,
 } from "../services/Blog";
-import { useRouter } from "next/navigation";
 
 // create recipes
 export const useCreateBlogMutation = () => {
@@ -34,15 +33,13 @@ export const useGetBlogs = () => {
 };
 
 // get recipe details
-export const useGetBlogDetails = (recipeId: string) => {
-  const router = useRouter();
+export const useGetBlogDetails = (blogId: string) => {
   return useQuery({
-    queryKey: ["GET_RECIPE_DETAILS", recipeId],
+    queryKey: ["GET_BLOG_DETAILS", blogId],
     queryFn: async () => {
-      const res = await getBlogDetails(recipeId);
+      const res = await getBlogDetails(blogId);
       if (res?.success === false) {
         toast.error(res?.message);
-        router.push("/auth/login");
         return res;
       } else {
         return res;

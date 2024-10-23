@@ -1,7 +1,7 @@
 "use client";
 
 import DeleteRecipeModal from "@/src/components/modal/DeleteBlogModal";
-import { ICategory, TBlog } from "@/src/types";
+import { TBlog, TCategory } from "@/src/types";
 import {
   EyeIcon,
   PencilIcon,
@@ -32,8 +32,20 @@ export const renderCell = (blog: TBlog, columnKey: React.Key) => {
       );
     case "title":
       return <> {cellValue}</>;
-    case "category":
-      return <> {cellValue ? (cellValue as Partial<ICategory>).name : "N/A"}</>;
+    case "categories":
+      return (
+        <>
+          {Array.isArray(cellValue) &&
+          cellValue.every(
+            (item): item is TCategory =>
+              typeof item === "object" && "name" in item
+          )
+            ? (cellValue as TCategory[])
+                .map((category) => category.name)
+                .join(", ")
+            : "N/A"}
+        </>
+      );
     case "status": {
       let statusColor: string;
       let StatusIcon: React.ElementType;
@@ -75,14 +87,14 @@ export const renderCell = (blog: TBlog, columnKey: React.Key) => {
       return (
         <div className="relative flex items-center gap-4">
           <Link
-            href={`/admin/blog-managment/view/${blog._id}`}
+            href={`/admin/blogs/view/${blog._id}`}
             className="cursor-pointer text-lg text-default-400 active:opacity-50"
           >
             <EyeIcon className="size-5" />
           </Link>
 
           <Link
-            href={`/admin/blog-managment/edit/${blog._id}`}
+            href={`/admin/blogs/edit/${blog._id}`}
             className="cursor-pointer text-lg text-default-400 active:opacity-50"
           >
             <PencilIcon className="size-5" />

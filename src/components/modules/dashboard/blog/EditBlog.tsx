@@ -1,45 +1,67 @@
 "use client";
 
-import { PlusIcon, TrashIcon } from "@/src/assets/icons";
 import FXInput from "@/src/components/Form/FXInput";
-import FXSelect from "@/src/components/Form/FXSelect";
-import { RECIPE_ISPAID_OPTIONS, RECIPE_STATUS_OPTIONS } from "@/src/constant";
 import { useGetCategories } from "@/src/hooks/categories.hook";
-import {
-  useGetRecipeDetails,
-  useUpdateRecipeMutation,
-} from "@/src/hooks/blog.hook";
-import { updateRecipeSchema } from "@/src/schemas/recipe.schem";
-import { IRecipe } from "@/src/types";
+import { TBlog } from "@/src/types";
 import cloudinaryUpload from "@/src/utils/cloudinaryUpload";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@nextui-org/button";
 import { Divider } from "@nextui-org/divider";
-import { ChangeEvent, useEffect, useMemo, useRef, useState } from "react";
+import { ChangeEvent, useEffect, useMemo, useState } from "react";
 import {
-  Controller,
   FieldValues,
   FormProvider,
   SubmitHandler,
-  useFieldArray,
   useForm,
+  Controller,
 } from "react-hook-form";
-import JoditEditor from "jodit-react";
+import dynamic from "next/dynamic";
+import { Key } from "react";
 
-const EditBlog = ({ recipeId }: { recipeId: string }) => {
-  // define state
+import { updateBlogSchema } from "@/src/schemas/blog.schema";
+import { Select, SelectItem } from "@nextui-org/select";
+import {
+  useGetBlogDetails,
+  useUpdateBlogMutation,
+} from "@/src/hooks/blog.hook";
+import LoadingSpinner from "@/src/components/UI/LoadingSpinner";
+
+const JoditEditor = dynamic(() => import("jodit-react"), { ssr: false });
+
+type FormValues = {
+  content: string;
+  categories: string[];
+  title: string;
+  description: string;
+  tags: string;
+};
+
+function EditBlog({ blogId }: { blogId: string }) {
+  const contentConfig = useMemo(
+    () => ({
+      theme: "default",
+      minHeight: 200,
+      maxHeight: 400,
+      placeholder: "Use description to edit your blog",
+      textColor: "#000000",
+      style: {
+        color: "#000000",
+      },
+    }),
+    []
+  );
+
   const [imageFile, setImageFile] = useState<File[] | []>([]);
   const [imagePreview, setImagePreview] = useState<string[] | []>([]);
   const {
-    data: recipeSingleData,
-    isLoading: isSingleRecipeLoading,
-    isError: isSingleRecipeError,
-  } = useGetRecipeDetails(recipeId);
+    mutate: updateBlog,
+    isPending: blogPending,
+    isSuccess,
+  } = useUpdateBlogMutation();
+  const { data: blogData, isLoading: isBlogLoading } =
+    useGetBlogDetails(blogId);
 
-  const reciepeSingle = recipeSingleData?.data;
-
-  const { mutate: handleUpdateRecipe, isPending: recipePending } =
-    useUpdateRecipeMutation();
   // get categories
   const { data: categoriesData, isLoading: categoryLoading } =
     useGetCategories();
@@ -57,81 +79,64 @@ const EditBlog = ({ recipeId }: { recipeId: string }) => {
   }
 
   // define methods
-  const formConfig: any = {};
-  formConfig["resolver"] = zodResolver(updateRecipeSchema);
-
-  const methods = useForm({
-    ...formConfig,
+  const methods = useForm<FormValues>({
+    resolver: zodResolver(updateBlogSchema),
   });
 
-  // destructure methods needed object
   const {
     control,
     handleSubmit,
+    reset,
+    setValue,
     formState: { errors },
   } = methods;
 
-  // init usefieldarray obj
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: "ingredients",
-  });
+  // if the data successfully submit then reset the form
+  useEffect(() => {
+    if (isSuccess) {
+      setImageFile([]);
+      setImagePreview([]);
+    }
+  }, [isSuccess, reset]);
 
-  const editor = useRef(null);
-  const descriptionConfig = useMemo(
-    () => ({
-      theme: "default",
-      minHeight: 200,
-      maxHeight: 400,
-      placeholder: "Use description to edit your recipe",
-      textColor: "#000000",
-      style: {
-        color: "#000000",
-      },
-    }),
-    []
-  );
-  const instructionsConfig = useMemo(
-    () => ({
-      theme: "default",
-      minHeight: 200,
-      maxHeight: 400,
-      placeholder: "Use instructions to edit your recipe",
-      textColor: "#000000",
-      style: {
-        color: "#000000",
-      },
-    }),
-    []
-  );
+  useEffect(() => {
+    if (blogData?.data) {
+      const blog = blogData.data;
+      setValue("title", blog.title);
+      setValue(
+        "categories",
+        blog.categories.map((cat: { _id: string; name: string }) => cat._id)
+      );
+      setValue("description", blog.description);
+      setValue("tags", blog.tags.join(", "));
+      setValue("content", blog.content);
+      setImagePreview(blog.image ? [blog.image] : []);
+    }
+  }, [blogData, setValue]);
 
   // form submit handler
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
-    let imageUrl = recipeSingleData?.data?.image;
-    if (imageFile && imageFile.length > 0) {
+    let imageUrl = blogData?.data?.image || "";
+
+    if (imageFile.length > 0) {
       imageUrl = await cloudinaryUpload(imageFile[0]);
     }
-    const recipeData: Partial<IRecipe> = {
+    const blogUpdateData: Partial<TBlog> = {
       ...data,
-      prepTime: Number(data.prepTime),
-      cookTime: Number(data.cookTime),
-      isPaid: data.isPaid === "true" ? true : false,
-      image: imageUrl || "",
+      title: data.title,
+      categories: data.categories,
+      tags: data.tags.split(",").map((id: string) => id.trim()),
+      content: data.content,
+      image: imageUrl,
     };
 
-    // Replace createRecipe with updateRecipe (you'll need to create this mutation)
-    handleUpdateRecipe({ id: recipeId, data: recipeData });
-  };
-
-  // handle field array append
-  const handleFieldAppent = () => {
-    append({ name: "", quantity: "" });
+    updateBlog({ id: blogId, data: blogUpdateData });
   };
 
   // handle image change
   const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files![0];
-    setImageFile([...imageFile, file]);
+    setImageFile([file]);
 
     // if file
     if (file) {
@@ -142,156 +147,55 @@ const EditBlog = ({ recipeId }: { recipeId: string }) => {
       reader.readAsDataURL(file);
     }
   };
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    if (recipeSingleData?.data) {
-      const recipe = recipeSingleData.data;
+    setIsMounted(true);
+  }, []);
 
-      methods.setValue("category", recipe?.category?._id || "");
-      methods.setValue("title", recipe.title);
-      methods.setValue("category", recipe?.category?._id || "");
-      methods.setValue("isPaid", String(recipe?.isPaid));
-      methods.setValue("status", recipe?.status);
-      methods.setValue("prepTime", recipe.prepTime);
-      methods.setValue("cookTime", recipe.cookTime);
-      methods.setValue("instructions", recipe.instructions);
-      methods.setValue("description", recipe.description);
-      methods.setValue("ingredients", recipe.ingredients);
-      setImagePreview(recipe.image ? [recipe.image] : []);
-    }
-  }, [recipeSingleData, methods]);
-
-  // loading state
-  if (isSingleRecipeLoading) {
-    return (
-      <div className="flex justify-center items-center h-screen dark:bg-gray-800">
-        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900 dark:border-gray-100" />
-      </div>
-    );
-  }
-
-  // is erro r
-  if (isSingleRecipeError) {
-    return (
-      <div className="text-center text-red-600 dark:text-red-400 text-xl mt-10">
-        Error loading recipe.
-      </div>
-    );
+  if (isBlogLoading) {
+    return <LoadingSpinner />;
   }
 
   return (
     <div className="h-full rounded-xl bg-gradient-to-b from-default-100 px-20 py-12">
-      <h1 className="text-2xl font-semibold">Update Recipe</h1>
+      <h1 className="text-2xl font-semibold">Edit blog</h1>
       <Divider className="my-5" />
       <FormProvider {...methods}>
         <form onSubmit={handleSubmit(onSubmit)}>
-          {/* title and description */}
+          {/* title and category */}
           <div className="flex flex-wrap gap-4 py-2">
             <div className="min-w-fit flex-1">
-              <FXInput
-                defaultValue={reciepeSingle?.title}
-                name="title"
-                label="Title"
-              />
-            </div>
-            <div className="min-w-fit flex-1">
-              <FXSelect
-                options={categorieOptions}
-                disabled={categoryLoading}
-                name="category"
-                label="Category"
-                variant="bordered"
-              />
-            </div>
-          </div>
-
-          {/* status and ispain */}
-          <div className="flex flex-wrap gap-4 py-2">
-            <div className="min-w-fit flex-1">
-              <FXSelect
-                options={RECIPE_ISPAID_OPTIONS}
-                name="isPaid"
-                label="Is Paid"
-                variant="bordered"
-              />
-            </div>
-            <div className="min-w-fit flex-1">
-              <FXSelect
-                options={RECIPE_STATUS_OPTIONS}
-                defaultValue={reciepeSingle?.isPaid}
-                name="status"
-                label="Status"
-                variant="bordered"
-              />
-            </div>
-          </div>
-
-          {/* prepTime and cookTime */}
-          <div className="flex flex-wrap gap-4 py-2">
-            <div className="min-w-fit flex-1">
-              <FXInput
-                defaultValue={reciepeSingle?.prepTime}
-                name="prepTime"
-                label="Prep Time"
-              />
-            </div>
-            <div className="min-w-fit flex-1">
-              <FXInput
-                defaultValue={reciepeSingle?.cookTime}
-                name="cookTime"
-                label="Cook Time"
-              />
-            </div>
-          </div>
-
-          {/* instructions and description */}
-          <div className="flex flex-wrap gap-4 py-2">
-            <div className="min-w-fit flex-1">
-              <Controller
-                name="instructions"
-                control={control}
-                render={({ field }) => (
-                  <>
-                    <label className="mb-3" htmlFor="instructions">
-                      Instructions
-                    </label>
-                    <JoditEditor
-                      ref={editor}
-                      value={field.value as string}
-                      onChange={(newContent) => {
-                        field.onChange(newContent);
-                      }}
-                      config={instructionsConfig}
-                    />
-                    {errors.instructions && (
-                      <span className="text-red-500">
-                        {errors.instructions.message as string}
-                      </span>
-                    )}
-                  </>
-                )}
-              />
+              <FXInput name="title" label="Title" />
             </div>
             <div className="min-w-fit flex-1">
               <Controller
-                name="description"
+                name="categories"
                 control={control}
                 render={({ field }) => (
                   <>
-                    <label className="mb-3" htmlFor="description">
-                      Description
-                    </label>
-                    <JoditEditor
-                      ref={editor}
-                      value={field.value as string}
-                      onChange={(newContent) => {
-                        field.onChange(newContent);
+                    <Select
+                      label="Category"
+                      placeholder="Select categories"
+                      disabled={categoryLoading}
+                      variant="bordered"
+                      selectionMode="multiple"
+                      className="max-w-xs"
+                      selectedKeys={field.value}
+                      onSelectionChange={(keys) => {
+                        const selectedKeys = Array.from(keys as Set<Key>);
+                        field.onChange(selectedKeys);
                       }}
-                      config={descriptionConfig}
-                    />
-                    {errors.description && (
+                    >
+                      {categorieOptions.map((category) => (
+                        <SelectItem key={category.key} value={category.key}>
+                          {category.label}
+                        </SelectItem>
+                      ))}
+                    </Select>
+                    {errors.categories && (
                       <span className="text-red-500">
-                        {errors.description.message as string}
+                        {errors.categories.message as string}
                       </span>
                     )}
                   </>
@@ -299,40 +203,44 @@ const EditBlog = ({ recipeId }: { recipeId: string }) => {
               />
             </div>
           </div>
+          {/* description and tags */}
+          <div className="flex flex-wrap gap-4 py-2">
+            <div className="min-w-fit flex-1">
+              <FXInput name="description" label="Description" />
+            </div>
 
-          {/* ingredients list */}
-          <Divider className="my-5" />
-          <div className="flex justify-between items-center">
-            <h2 className="text-2xl ">Ingredients List</h2>
-            <Button
-              isIconOnly
-              onClick={() => handleFieldAppent()}
-              radius="none"
-              className="p-1"
-            >
-              <PlusIcon />
-            </Button>
+            <div className="min-w-fit flex-1">
+              <FXInput name="tags" label="Tags" />
+            </div>
           </div>
 
-          {/* field loopt */}
-          <div className="space-y-3 my-5">
-            {fields.map((field, index) => (
-              <div className="flex gap-3 items-center" key={field.id}>
-                <FXInput name={`ingredients.${index}.name`} label="Name" />
-                <FXInput
-                  name={`ingredients.${index}.quantity`}
-                  label="Quantity"
-                />
-                <Button
-                  isIconOnly
-                  onClick={() => remove(index)}
-                  className="bg-red-500 p-2"
-                  radius="none"
-                >
-                  <TrashIcon />
-                </Button>
-              </div>
-            ))}
+          {/* content */}
+          <div className="flex flex-wrap gap-4 py-2">
+            <div className="min-w-fit flex-1">
+              <Controller
+                name="content"
+                control={control}
+                render={({ field }) => (
+                  <>
+                    <label className="mb-3" htmlFor="content">
+                      Content
+                    </label>
+                    {isMounted && (
+                      <JoditEditor
+                        value={field.value as string}
+                        onChange={(newContent) => field.onChange(newContent)}
+                        config={contentConfig}
+                      />
+                    )}
+                    {errors.content && (
+                      <span className="text-red-500">
+                        {errors.content.message as string}
+                      </span>
+                    )}
+                  </>
+                )}
+              />
+            </div>
           </div>
 
           {/* image */}
@@ -376,7 +284,7 @@ const EditBlog = ({ recipeId }: { recipeId: string }) => {
           </div>
 
           <Button
-            isLoading={recipePending}
+            isLoading={blogPending}
             className="mt-5"
             radius="none"
             type="submit"
@@ -387,6 +295,6 @@ const EditBlog = ({ recipeId }: { recipeId: string }) => {
       </FormProvider>
     </div>
   );
-};
+}
 
 export default EditBlog;
