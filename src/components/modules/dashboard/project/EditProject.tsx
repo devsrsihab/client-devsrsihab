@@ -1,8 +1,7 @@
 "use client";
 
 import FXInput from "@/src/components/Form/FXInput";
-import { useGetCategories } from "@/src/hooks/categories.hook";
-import { TBlog } from "@/src/types";
+import { IProject } from "@/src/types";
 import cloudinaryUpload from "@/src/utils/cloudinaryUpload";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -19,22 +18,28 @@ import {
 import dynamic from "next/dynamic";
 import { Key } from "react";
 
-import { updateBlogSchema } from "@/src/schemas/blog.schema";
-import { Select, SelectItem } from "@nextui-org/select";
 import {
-  useGetBlogDetails,
-  useUpdateBlogMutation,
-} from "@/src/hooks/blog.hook";
+  useGetProjectDetails,
+  useUpdateProjectMutation,
+} from "@/src/hooks/project.hook";
 import LoadingSpinner from "@/src/components/UI/LoadingSpinner";
+import { useGetTechnologies } from "@/src/hooks/technology.hook";
+import { updateProjectSchema } from "@/src/schemas/projectSchema";
+import { Select, SelectItem } from "@nextui-org/select";
+import { Switch } from "@nextui-org/switch";
 
 const JoditEditor = dynamic(() => import("jodit-react"), { ssr: false });
 
 type FormValues = {
   content: string;
-  categories: string[];
+  technologies: string[];
   title: string;
   description: string;
-  tags: string;
+  frontendGithubLink: string;
+  backendGithubLink: string;
+  frontendLiveLink: string;
+  backendLiveLink: string;
+  isFeatured: boolean;
 };
 
 function EditProject({ projectId }: { projectId: string }) {
@@ -43,7 +48,7 @@ function EditProject({ projectId }: { projectId: string }) {
       theme: "default",
       minHeight: 200,
       maxHeight: 400,
-      placeholder: "Use description to edit your blog",
+      placeholder: "Use description to edit your project",
       textColor: "#000000",
       style: {
         color: "#000000",
@@ -55,32 +60,32 @@ function EditProject({ projectId }: { projectId: string }) {
   const [imageFile, setImageFile] = useState<File[] | []>([]);
   const [imagePreview, setImagePreview] = useState<string[] | []>([]);
   const {
-    mutate: updateBlog,
-    isPending: blogPending,
+    mutate: updateProject,
+    isPending: projectPending,
     isSuccess,
-  } = useUpdateBlogMutation();
-  const { data: blogData, isLoading: isBlogLoading } =
-    useGetBlogDetails(projectId);
+  } = useUpdateProjectMutation();
+  const { data: projectData, isLoading: isProjectLoading } =
+    useGetProjectDetails(projectId);
 
-  // get categories
-  const { data: categoriesData, isLoading: categoryLoading } =
-    useGetCategories();
+  // get technologies
+  const { data: technologiesData, isLoading: technologyLoading } =
+    useGetTechnologies();
 
   // define option let
-  let categorieOptions: { key: string; label: string }[] = [];
+  let technologiesOptions: { key: string; label: string }[] = [];
 
-  if (categoriesData?.data && !categoryLoading) {
-    categorieOptions = categoriesData?.data?.map(
-      (category: { _id: string; name: string }) => ({
-        key: category._id,
-        label: category.name,
+  if (technologiesData?.data && !technologyLoading) {
+    technologiesOptions = technologiesData?.data?.map(
+      (technology: { _id: string; name: string }) => ({
+        key: technology._id,
+        label: technology.name,
       })
     );
   }
 
   // define methods
   const methods = useForm<FormValues>({
-    resolver: zodResolver(updateBlogSchema),
+    resolver: zodResolver(updateProjectSchema),
   });
 
   const {
@@ -100,37 +105,40 @@ function EditProject({ projectId }: { projectId: string }) {
   }, [isSuccess, reset]);
 
   useEffect(() => {
-    if (blogData?.data) {
-      const blog = blogData.data;
-      setValue("title", blog.title);
+    if (projectData?.data) {
+      const project = projectData.data;
+      setValue("title", project.title);
       setValue(
-        "categories",
-        blog.categories.map((cat: { _id: string; name: string }) => cat._id)
+        "technologies",
+        project.technologies.map(
+          (tech: { _id: string; name: string }) => tech._id
+        )
       );
-      setValue("description", blog.description);
-      setValue("tags", blog.tags.join(", "));
-      setValue("content", blog.content);
-      setImagePreview(blog.image ? [blog.image] : []);
+      setValue("description", project.description);
+      setValue("content", project.content);
+      setValue("frontendGithubLink", project.frontendGithubLink);
+      setValue("backendGithubLink", project.backendGithubLink);
+      setValue("frontendLiveLink", project.frontendLiveLink);
+      setValue("backendLiveLink", project.backendLiveLink);
+      setValue("isFeatured", project.isFeatured);
+      setImagePreview(project.image ? [project.image] : []);
     }
-  }, [blogData, setValue]);
+  }, [projectData, setValue]);
 
   // form submit handler
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
-    let imageUrl = blogData?.data?.image || "";
+    let imageUrl = projectData?.data?.image || "";
 
     if (imageFile.length > 0) {
       imageUrl = await cloudinaryUpload(imageFile[0]);
     }
-    const blogUpdateData: Partial<TBlog> = {
+    const projectUpdateData: Partial<IProject> = {
       ...data,
-      title: data.title,
-      categories: data.categories,
-      tags: data.tags.split(",").map((id: string) => id.trim()),
-      content: data.content,
+      technologies: data.technologies,
       image: imageUrl,
     };
 
-    updateBlog({ id: projectId, data: blogUpdateData });
+    updateProject({ id: projectId, data: projectUpdateData });
   };
 
   // handle image change
@@ -153,31 +161,31 @@ function EditProject({ projectId }: { projectId: string }) {
     setIsMounted(true);
   }, []);
 
-  if (isBlogLoading) {
+  if (isProjectLoading) {
     return <LoadingSpinner />;
   }
 
   return (
     <div className="h-full rounded-xl bg-gradient-to-b from-default-100 px-20 py-12">
-      <h1 className="text-2xl font-semibold">Edit blog</h1>
+      <h1 className="text-2xl font-semibold">Edit Project</h1>
       <Divider className="my-5" />
       <FormProvider {...methods}>
         <form onSubmit={handleSubmit(onSubmit)}>
-          {/* title and category */}
+          {/* title and technologies */}
           <div className="flex flex-wrap gap-4 py-2">
             <div className="min-w-fit flex-1">
               <FXInput name="title" label="Title" />
             </div>
             <div className="min-w-fit flex-1">
               <Controller
-                name="categories"
+                name="technologies"
                 control={control}
                 render={({ field }) => (
                   <>
                     <Select
-                      label="Category"
-                      placeholder="Select categories"
-                      disabled={categoryLoading}
+                      label="Technologies"
+                      placeholder="Select technologies"
+                      disabled={technologyLoading}
                       variant="bordered"
                       selectionMode="multiple"
                       className="max-w-xs"
@@ -187,15 +195,15 @@ function EditProject({ projectId }: { projectId: string }) {
                         field.onChange(selectedKeys);
                       }}
                     >
-                      {categorieOptions.map((category) => (
-                        <SelectItem key={category.key} value={category.key}>
-                          {category.label}
+                      {technologiesOptions.map((technology) => (
+                        <SelectItem key={technology.key} value={technology.key}>
+                          {technology.label}
                         </SelectItem>
                       ))}
                     </Select>
-                    {errors.categories && (
+                    {errors.technologies && (
                       <span className="text-red-500">
-                        {errors.categories.message as string}
+                        {errors.technologies.message as string}
                       </span>
                     )}
                   </>
@@ -203,14 +211,24 @@ function EditProject({ projectId }: { projectId: string }) {
               />
             </div>
           </div>
-          {/* description and tags */}
+          {/* description and isFeatured */}
           <div className="flex flex-wrap gap-4 py-2">
             <div className="min-w-fit flex-1">
               <FXInput name="description" label="Description" />
             </div>
-
             <div className="min-w-fit flex-1">
-              <FXInput name="tags" label="Tags" />
+              <Controller
+                name="isFeatured"
+                control={control}
+                render={({ field }) => (
+                  <Switch
+                    isSelected={field.value}
+                    onValueChange={field.onChange}
+                  >
+                    Featured Project
+                  </Switch>
+                )}
+              />
             </div>
           </div>
 
@@ -240,6 +258,24 @@ function EditProject({ projectId }: { projectId: string }) {
                   </>
                 )}
               />
+            </div>
+          </div>
+
+          {/* Links */}
+          <div className="flex flex-wrap gap-4 py-2">
+            <div className="min-w-fit flex-1">
+              <FXInput name="frontendGithubLink" label="Frontend Github Link" />
+            </div>
+            <div className="min-w-fit flex-1">
+              <FXInput name="backendGithubLink" label="Backend Github Link" />
+            </div>
+          </div>
+          <div className="flex flex-wrap gap-4 py-2">
+            <div className="min-w-fit flex-1">
+              <FXInput name="frontendLiveLink" label="Frontend Live Link" />
+            </div>
+            <div className="min-w-fit flex-1">
+              <FXInput name="backendLiveLink" label="Backend Live Link" />
             </div>
           </div>
 
@@ -284,7 +320,7 @@ function EditProject({ projectId }: { projectId: string }) {
           </div>
 
           <Button
-            isLoading={blogPending}
+            isLoading={projectPending}
             className="mt-5"
             radius="none"
             type="submit"

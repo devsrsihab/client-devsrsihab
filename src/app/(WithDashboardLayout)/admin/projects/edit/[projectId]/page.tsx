@@ -1,8 +1,8 @@
-import EditBlog from "@/src/components/modules/dashboard/blog/EditBlog";
+import EditProject from "@/src/components/modules/dashboard/project/EditProject";
 
-const RecipeUpdate = ({ params }: { params: { blogId: string } }) => {
-  const { blogId } = params;
-  return <EditBlog blogId={blogId} />;
+const ProjectUpdate = ({ params }: { params: { projectId: string } }) => {
+  const { projectId } = params;
+  return <EditProject projectId={projectId} />;
 };
 
-export default RecipeUpdate;
+export default ProjectUpdate;
